@@ -10,7 +10,7 @@ from main.consumers import AuthConsumer
 application = ProtocolTypeRouter({
     'websocket': AuthMiddlewareStack(
         URLRouter([
-            path("write/", WriteConsumer.as_asgi()),
+            path("write/<str:board_url>/<str:session_id>/", WriteConsumer.as_asgi()),
             # path("auth/<str:board_url>/<str:session_id>/", AuthConsumer.as_asgi()),
         ])
     )

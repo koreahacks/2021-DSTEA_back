@@ -2,13 +2,9 @@ import asyncio
 import json
 from django.contrib.auth import get_user_model
 from channels.consumer import AsyncConsumer
-from .models import *
 from asgiref.sync import sync_to_async
 from channels.db import database_sync_to_async
-
-
-
-from main.models import Board, User
+from main.models import Path, Board, User
 
 AUTHRES = 'res'
 AUTHREQ = 'req'
@@ -34,81 +30,65 @@ class WriteConsumer(AsyncConsumer):
             user.save()
         except:
             return
+    
+    @database_sync_to_async
+    def update_path(self, path_id, pos):
+        path = Path(path_id = path_id)
+        path.data = pos
+        path.save()
 
     async def websocket_connect(self, event):
-        # board_url = self.scope['url_route']['kwargs']['board_url']
-        # session_id = self.scope['url_route']['kwargs']['session_id']
-        # try:
-        #     board = Board.objects.get(board_url=text['board'])
-        #     user = User.objects.get(session_id=text['user'])
+        board_url = self.scope['url_route']['kwargs']['board_url']
+        session_id = self.scope['url_route']['kwargs']['session_id']
 
-        # except Exception as e:
-        #     await self.send({
-        #         "error_msg": e
-        #     })
-        # await self.update_user(session_id, self.channel_name)
-        # print(board_url)
-        print(self.channel_name)
-        print(self.channel_layer)
+        await self.update_user(session_id, self.channel_name)
+        
         await self.channel_layer.group_add(
-            'asdf',
+            board_url,
             self.channel_name
-        )            
-        await self.channel_layer.group_send(
-            'asdf',
-            {
-                "type": "board_message",
-                # "info": path.info(),
-                "pos": '123123'
-            }
         )
         await self.send({
             "type": "websocket.accept"
         })
     
     async def websocket_receive(self, event):
-        # board_url = self.scope['url_route']['kwargs']['board_url']
-        # session_id = self.scope['url_route']['kwargs']['session_id']
+        board_url = self.scope['url_route']['kwargs']['board_url']
+        session_id = self.scope['url_route']['kwargs']['session_id']
 
         text = json.loads(event['text'])
-        print(text)
-        print(type(text))
-        # if text['status'] == 'start':
-        #     await self.save_path(board_url, text)
-            
+
+        if text['status'] == 'start':
+            await self.save_path(board_url, text)
+
         if text['status'] == 'draw':
-            print(self.channel_layer)
-            # path = await database_sync_to_async(Path.objects.get)(path_id=text['path_id'])
+            path = await database_sync_to_async(Path.objects.get)(path_id=text['path_id'])
             await self.channel_layer.group_send(
-                'asdf',
+                board_url,
                 {
                     "type": "board_message",
-                    # "info": path.info(),
-                    "pos": '123123'
+                    "info": path.info(),
+                    "pos": text['pos'],
                 }
             )
-        
-        elif text['status'] == 'end':
-            pass
-            
+
+        if text['status'] == 'end':
+            await self.update_path(text['path_id'], text['pos'])
 
     async def board_message(self, event):
-        print({
-            'type': 'websocket.send',
-            # 'path_id': event['info']['path'],
-            # 'is_public': event['info']['is_public'],
-            # 'page': event['info']['page'],
-            # 'attr': event['info']['attr'],
+        data = json.dumps({
+            'path_id': event['info']['path'],
+            'is_public': event['info']['is_public'],
+            'page': event['info']['page'],
+            'attr': event['info']['attr'],
             'pos': event['pos']
         })
         await self.send({
             'type': 'websocket.send',
-            # 'path_id': event['info']['path'],
-            # 'is_public': event['info']['is_public'],
-            # 'page': event['info']['page'],
-            # 'attr': event['info']['attr'],
-            'pos': event['pos']
+            'text': data,
         })
+
+    async def websocket_disconnect(self, event):
+        print('disconnected')
 
 class AuthConsumer(AsyncConsumer):
     async def websocket_connect(self, event):
