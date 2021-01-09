@@ -61,3 +61,18 @@ class WriteConsumer(AsyncConsumer):
             'info': event['info'],
             'pos': event['pos']
         })
+
+
+class DeleteConsumer(AsyncConsumer):
+    async def websocket_connect(self, event):
+        
+
+    async def websocket_receive(self, event):
+
+class AuthConsumer(AsyncConsumer):
+    async def websocket_connect(self, event):
+        
+
+    async def websocket_receive(self, event):
+
+
