@@ -44,6 +44,7 @@ def get_board(request, board_url):
     else: return msg_user.res()
 
     try:
+        
         board = Board.objects.filter(board_url=board_url).get()
     except Board.DoesNotExist:
         return Message(Status.NOT_FOUND, 'No such board.').res()
@@ -63,10 +64,10 @@ def file_upload(request, board_url):
     if request.method == 'GET':
         return send_csrf(request)
     if request.method != 'POST':
-        return Message(Status.FORBIDDEN, 'Method not allowed.')
+        return Message(Status.FORBIDDEN, 'Method not allowed.').res()
     
     if request.FILES.get('file') is None:
-        return Message(Status.BAD_REQUEST, 'Wrong form.')
+        return Message(Status.BAD_REQUEST, 'Wrong form.').res()
 
     file = request.FILES['file']
     ext = file.name.split('.')[-1]
