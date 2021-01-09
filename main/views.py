@@ -12,7 +12,7 @@ from main.utils.path import get_all_path
 
 def make_board(request):
     msg_user = create_user(request)
-    if msg_user['status'] == Status.BAD_REQUEST: # Redirect user's board url
+    if msg_user.data['status'] == Status.BAD_REQUEST: # Redirect user's board url
         try:
             user = User.objects.get(session_id=request.session_id.get('id'))
             return redirect(user.board)

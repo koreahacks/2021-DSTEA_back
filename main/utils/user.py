@@ -9,8 +9,9 @@ with open("main/fruits.txt", "r") as f:
 
 def create_user(request):
     if request.session.get('id') is None: # First Access
+        request.session['id'] = str(uuid1.uuid1())
         try:
-            user = User(session_id=str(uuid1.uuid1()),
+            user = User(session_id=request.session['id'],
                         nickname=random.sample(fruit_list, 1)[0] # 추후 수정 필요
                         )
             user.save()
@@ -39,7 +40,7 @@ def get_or_create_user(request):
     msg_user = get_user(request)
     if is_success(msg_user): user = msg_user.data['user']
 
-    elif msg_user.status is Status.NOT_FOUND:
+    elif msg_user.data['status'] == Status.NOT_FOUND:
         msg_user = create_user(request)
         if is_success(msg_user): user = msg_user.data['user']
         else: return msg_user
