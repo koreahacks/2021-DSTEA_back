@@ -43,7 +43,11 @@ def ppt2pdf(ppt_file):
 
 def save_file(file, board_url):
     directory = f'{DIR_UPLOAD}/{str(board_url)}'
-    os.mkdir(directory)
+    
+    try:
+        os.mkdir(directory)
+    except FileExistsError:
+        pass
 
     with open(f'{directory}/{FILE_NAME}', 'wb+') as dest:
         for chunk in file.chunks():
