@@ -39,3 +39,4 @@ class User(models.Model):
     nickname = models.CharField(max_length=10)
     board = models.ForeignKey(Board, null=True, on_delete=models.CASCADE)
     auth_write = models.BooleanField(default=True)
+    channel_name = models.CharField(max_length=100)
