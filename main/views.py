@@ -54,6 +54,7 @@ def get_board(request, board_url):
     return Message(Status.SUCCESS,
         user=user.session_id,
         nickname=user.nickname,
+        is_auth=user.auth_write,
         path=path_list,
         page=get_images(board_url)
     ).res()
