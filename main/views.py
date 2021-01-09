@@ -2,7 +2,9 @@ import uuid1
 from django.shortcuts import render
 from django.http import HttpResponse
 
-from main.utils.common import *
+from main.models import Path
+from main.utils.common import Message, Status
+
 
 def make_board(request):
     return
