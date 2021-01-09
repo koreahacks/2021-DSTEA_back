@@ -31,7 +31,7 @@ def make_board(request):
             user.is_admin = True
             user.is_public = True
             user.save()
-            return Message(Status.SUCCESS, board=user.board.board_url).res()
+            return Message(Status.SUCCESS, board=board.board_url).res()
         except Exception as e:
             return Message(Status.INTERNAL_ERROR, f'Internal server error, {e}', is_valid=False).res()
 
