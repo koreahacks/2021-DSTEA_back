@@ -49,4 +49,4 @@ def save_file(file, board_url):
         for chunk in file.chunks():
             dest.write(chunk)
 
-    return f'{directory}/{FILE_NAME'
+    return f'{directory}/{FILE_NAME}'
