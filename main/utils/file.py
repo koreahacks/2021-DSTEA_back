@@ -17,6 +17,8 @@ def pdf2jpgs(pdf_file, board_url):
         filename = f'{DIR_UPLOAD}/{board_url}/{str(i)}.jpg'
         images[i].save(filename)
 
+    os.unlink(pdf_file)
+
     return num_images
 
 def ppt2pdf(ppt_file):
@@ -39,6 +41,8 @@ def ppt2pdf(ppt_file):
     for ext in EXT_PPT:
         filename = ppt_file.replace(ext, '.pdf')
     
+    os.unlink(ppt_file)
+    
     return filename
 
 def save_file(file, board_url):
@@ -54,11 +58,6 @@ def save_file(file, board_url):
             dest.write(chunk)
 
     return f'{directory}/{FILE_NAME}'
-
-def delete_uploaded_file(board_url):
-    os.unlink(f'{DIR_UPLOAD}/{str(board_url)}/{FILE_NAME}')
-    return None
-    
 
 def get_images(board_url):
     directory = f'{DIR_UPLOAD}/{str(board_url)}'

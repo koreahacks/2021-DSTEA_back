@@ -6,7 +6,7 @@ from main.models import User, Board, Path
 from main.utils.common import Message, Status, is_success
 from main.utils.common import send_csrf
 from main.utils.file import ppt2pdf, pdf2jpgs
-from main.utils.file import save_file, delete_uploaded_file, get_images
+from main.utils.file import save_file, get_images
 from main.utils.file import EXT_PPT, EXT_PDF
 from main.utils.user import create_user, get_or_create_user
 from main.utils.path import get_all_path
@@ -84,7 +84,6 @@ def file_upload(request, board_url):
         return Message(Status.BAD_REQUEST, "Wrong file.").res()
     
     page_num = pdf2jpgs(pdf_file, board_url)
-    delete_uploaded_file(board_url)
 
     return Message(Status.SUCCESS, page_num=page_num).res()
 
