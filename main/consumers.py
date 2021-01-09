@@ -56,23 +56,32 @@ class WriteConsumer(AsyncConsumer):
             
 
     async def board_message(self, event):
+        print({
+            'path_id': event['info']['path'],
+            'is_public': event['info']['is_public'],
+            'page': event['info']['page'],
+            'attr': event['info']['attr'],
+            'pos': event['pos']
+        })
         await self.send({
             'type': 'websocket.send',
-            'info': event['info'],
+            'path_id': event['info']['path'],
+            'is_public': event['info']['is_public'],
+            'page': event['info']['page'],
+            'attr': event['info']['attr'],
             'pos': event['pos']
         })
 
-
 class DeleteConsumer(AsyncConsumer):
     async def websocket_connect(self, event):
-        
+        pass
 
     async def websocket_receive(self, event):
+        pass
 
 class AuthConsumer(AsyncConsumer):
     async def websocket_connect(self, event):
-        
+        pass
 
     async def websocket_receive(self, event):
-
-
+        pass

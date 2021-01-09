@@ -29,10 +29,10 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'channels',
     'rest_framework',
     'colorfield',
     'main',
+    'channels',
     'corsheaders'
 ]
 
@@ -65,8 +65,8 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'everyboard_back.wsgi.application'
 ASGI_APPLICATION = 'everyboard_back.routing.application'
+WSGI_APPLICATION = 'everyboard_back.wsgi.application'
 
 # Password validation
 # https://docs.djangoproject.com/en/3.1/ref/settings/#auth-password-validators
