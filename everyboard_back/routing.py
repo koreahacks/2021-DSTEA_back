@@ -1,16 +1,17 @@
 from django.conf.urls import url
 from channels.routing import URLRouter, ProtocolTypeRouter
 from channels.security.websocket import OriginValidator, AllowedHostsOriginValidator
-from main.consumers import WriteConsumer, DeleteConsumer, AuthReqConsumer, AuthResConsumer
+from main.consumers import WriteConsumer
+from main.consumers import DeleteConsumer
+from main.consumers import AuthConsumer
 
 application = ProtocolTypeRouter({
     'websocket': AllowedHostsOriginValidator(
         URLRouter(
             [
-                url("write/", WriteConsumer.as_asgi()),
-                url("delete/", DeleteConsumer.as_asgi()),
-                url("auth_req/", AuthReqConsumer.as_asgi()),
-                url("auth_res/", AuthResConsumer.as_asgi()),
+                url("write/<str:board_url>/<str:session_id>", WriteConsumer.as_asgi()),
+                url("delete/<str:board_url>/<str:session_id>", DeleteConsumer.as_asgi()),
+                url("auth/<str:op>", AuthConsumer.as_asgi()),
             ]
         )
     )
