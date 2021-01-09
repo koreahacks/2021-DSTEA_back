@@ -29,6 +29,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'channels',
+    'rest_framework',
     'colorfield',
     'main',
     'corsheaders'
@@ -64,7 +66,7 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'everyboard_back.wsgi.application'
-
+ASGI_APPLICATION = 'everyboard_back.routing.application'
 
 # Password validation
 # https://docs.djangoproject.com/en/3.1/ref/settings/#auth-password-validators
@@ -109,3 +111,9 @@ SESSION_SAVE_EVERY_REQUEST = True
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
 
 STATIC_URL = '/static/'
+
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels.layers.InMemoryChannelLayer"
+    }
+}

@@ -10,6 +10,7 @@ class Board(models.Model):
         return self.board_url
         
 class Path(models.Model):
+    path_id = models.CharField(max_length=40, null=True)
     board = models.ForeignKey(Board, on_delete=models.CASCADE)
     page_id = models.IntegerField()
     session_id = models.CharField(max_length=40)
@@ -20,6 +21,18 @@ class Path(models.Model):
     )
     color = ColorField(default="#000000")
     data = models.TextField()
+
+    def info(self):
+        return {
+            'is_public': self.is_public,
+            'page': self.page_id,
+            'path': self.path_id,
+            'attr': {
+                'color': self.color,
+            }
+        }
+
+
 
 class User(models.Model):
     session_id = models.CharField(max_length=40)
