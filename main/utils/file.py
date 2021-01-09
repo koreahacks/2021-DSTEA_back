@@ -43,7 +43,7 @@ def ppt2pdf(ppt_file):
     
     os.unlink(ppt_file)
     
-    return filename
+    return Message(Status.SUCCESS, filename=filename)
 
 def save_file(file, board_url):
     directory = f'{DIR_UPLOAD}/{str(board_url)}'
