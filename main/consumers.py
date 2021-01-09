@@ -64,6 +64,15 @@ class AuthConsumer(AsyncConsumer):
 
         elif action == AUTHRES:
             accept = event.get('accept', None)
+            session_id = event.get('session_id', None)
+            await self.channel_layer.group_send(
+                f'auth-{self.board_url}',
+                {
+                    "type": "auth_response",
+                    "session_id": session_id,
+                    "accept": accept
+                }
+            )
 
 
     async def auth_request(self, event):
@@ -73,5 +82,9 @@ class AuthConsumer(AsyncConsumer):
                 'session_id': event['session_id']
             })
             
-
+    async def auth_response(self, event):
+        if event['session_id'] == self.channel_name:
+            await self.send({
+                "text": event['accept'],
+            })
 
