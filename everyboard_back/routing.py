@@ -11,7 +11,7 @@ application = ProtocolTypeRouter({
             [
                 url("write/<str:board_url>/<str:session_id>", WriteConsumer.as_asgi()),
                 url("delete/<str:board_url>/<str:session_id>", DeleteConsumer.as_asgi()),
-                url("auth", AuthConsumer.as_asgi()),
+                url("auth/<str:board_url>/<str:session_id>", AuthConsumer.as_asgi()),
             ]
         )
     )
