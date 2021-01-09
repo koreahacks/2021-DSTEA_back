@@ -1,14 +1,7 @@
-from everyboard_back.base import *
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+from django.contrib import admin
+from django.urls import path, include
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'HOST': os.getenv('DB_HOST'),
-        'PORT': '5432',
-        'NAME': 'EveryBoardDB',
-        'USER': 'everyboard_admin',
-        'PASSWORD': os.getenv('DB_PASSWORD'),
-    }
-}
+urlpatterns = [
+    path('admin/', admin.site.urls),
+    path('', include('main.urls')),
+]
