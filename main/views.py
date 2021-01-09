@@ -4,6 +4,7 @@ from django.http import HttpResponse
 
 from main.models import User, Board, Path
 from main.utils.common import Message, Status, is_success
+from main.utils.common import send_csrf
 from main.utils.file import ppt2pdf, pdf2jpgs
 from main.utils.file import save_file, delete_uploaded_file, get_images
 from main.utils.file import EXT_PPT, EXT_PDF
@@ -59,6 +60,8 @@ def get_board(request, board_url):
     ).res()
 
 def file_upload(request, board_url):
+    if request.method == 'GET':
+        return send_csrf(request)
     if request.method != 'POST':
         return Message(Status.FORBIDDEN, 'Method not allowed.')
     

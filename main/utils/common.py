@@ -1,6 +1,6 @@
 import json
-from django.http import JsonResponse
-
+from django.http import JsonResponse, HttpResponse
+from django.template import Template, RequestContext
 
 class Status():
     SUCCESS = 200
@@ -33,3 +33,7 @@ def is_success(msg: Message):
         return True
     else:
         return False
+
+
+def send_csrf(request):
+    return HttpResponse(Template('{% csrf_token %}').render(RequestContext(request)))
