@@ -22,10 +22,11 @@ class WriteConsumer(AsyncConsumer):
             color = text['attr']
         )
         path.save()
+        return path
     
     @database_sync_to_async
     def update_path(self, path_id, pos):
-        path = Path(path_id = path_id)
+        path = Path.objects.get(path_id = path_id)
         path.data = pos
         path.save()
 
@@ -43,8 +44,6 @@ class WriteConsumer(AsyncConsumer):
         board_url = self.scope['url_route']['kwargs']['board_url']
         session_id = self.scope['url_route']['kwargs']['session_id']
 
-        await self.update_user(session_id, self.channel_name)
-        
         await self.channel_layer.group_add(
             board_url,
             self.channel_name
@@ -60,21 +59,40 @@ class WriteConsumer(AsyncConsumer):
         text = json.loads(event['text'])
 
         if text['status'] == 'start':
-            await self.save_path(board_url, text)
+            new_path = await self.save_path(board_url, text)
+
+            await self.channel_layer.group_send(
+                board_url,
+                {
+                    "type": "write_message",
+                    "data": new_path.info(),
+                    "status": 'start'
+                }
+            ) 
 
         elif text['status'] == 'draw':
             path = await database_sync_to_async(Path.objects.get)(path_id=text['path_id'])
             await self.channel_layer.group_send(
                 board_url,
                 {
-                    "type": "board_message",
+                    "type": "write_message",
                     "data": path.info(),
                     "pos": text['pos'],
+                    "status": 'draw'
                 }
             )
 
         elif text['status'] == 'end':
+            path = await database_sync_to_async(Path.objects.get)(path_id=text['path_id'])
             await self.update_path(text['path_id'], text['pos'])
+            await self.channel_layer.group_send(
+                board_url,
+                {
+                    "type": "write_message",
+                    "data": path.info(),
+                    "status": 'end'
+                }
+            )            
 
         elif text['status'] == 'delete':
             page = await self.delete_path(text['path_id'])
@@ -89,12 +107,12 @@ class WriteConsumer(AsyncConsumer):
 
     async def write_message(self, event):
         data = json.dumps({
-            'status': 'draw',
+            'status': event['status'],
             'path_id': event['data']['path'],
             'is_public': event['data']['is_public'],
             'page': event['data']['page'],
             'attr': event['data']['attr'],
-            'pos': event['pos']
+            'pos': event.get('pos')
         })
         await self.send({
             'type': 'websocket.send',
