@@ -106,8 +106,8 @@ def write(request, board_url):
 
 def userlist(request, board_url):
     try:
-        users = User.objects.filter(board__board_url=str(board_url)).values_list('nickname')
-        users = [i[0] for i in list(users)]
+        users = User.objects.filter(board__board_url=str(board_url)).all()
+        users = [{user.nickname, user.auth_write} for user in users]
         return Message(Status.SUCCESS, nickname=users).res()
     except:
         return Message(Status.INTERNAL_ERROR, is_valid=False).res()
