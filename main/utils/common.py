@@ -26,3 +26,10 @@ class Message():
 
     def __str__(self):
         return json.dumps(self.data)
+
+
+def is_success(msg: Message):
+    if msg.data['status'] is Status.SUCCESS:
+        return True
+    else:
+        return False

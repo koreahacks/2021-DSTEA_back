@@ -4,6 +4,7 @@ from main.utils.common import Message, Status
 
 DIR_UPLOAD = 'main/static/upload'
 EXT_PPT = ["ppt", "pptx", "pps"]
+EXT_PDF = ["pdf"]
 TIMEOUT = 20
 
 def pdf2jpgs(pdf_file, board_url):
