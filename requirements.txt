@@ -7,3 +7,5 @@ psycopg2
 pdf2image
 Pillow
 unoconv
+channels
+django-cors-headers

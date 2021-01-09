@@ -29,3 +29,22 @@ class WriteConsumer(AsyncConsumer):
             "type": 'websocket.send',
             'text': event['text']
         })
+
+class DeleteConsumer(AsyncConsumer):
+    async def websocket_connect(self, event):
+        
+
+    async def websocket_receive(self, event):
+
+class AuthReqConsumer(AsyncConsumer):
+    async def websocket_connect(self, event):
+        
+
+    async def websocket_receive(self, event):
+
+
+class AuthResConsumer(AsyncConsumer):
+    async def websocket_connect(self, event):
+        
+
+    async def websocket_receive(self, event):
