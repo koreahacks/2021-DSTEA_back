@@ -27,8 +27,7 @@ def make_board(request):
                         )
             board.save()
             user.board = board
-            user.is_admin = True
-            user.is_public = True
+            user.auth_write = True
             user.save()
             return Message(Status.SUCCESS, board=board.board_url).res()
         except Exception as e:
@@ -83,9 +82,9 @@ def file_upload(request, board_url):
     else:
         return Message(Status.BAD_REQUEST, "Wrong file.").res()
     
-    page_num = pdf2jpgs(pdf_file, board_url)
+    pdf2jpgs(pdf_file, board_url)
 
-    return Message(Status.SUCCESS, page_num=page_num).res()
+    return Message(Status.SUCCESS, pages=get_images(board_url)).res()
 
 def write(request, board_url):
     if request.method != 'POST':
