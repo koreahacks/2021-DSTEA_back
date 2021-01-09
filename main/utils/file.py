@@ -58,4 +58,7 @@ def delete_uploaded_file(board_url):
 
 def get_images(board_url):
     directory = f'{DIR_UPLOAD}/{str(board_url)}'
-    return os.listdir(directory)
+    try:
+        os.listdir(directory)
+    except FileNotFoundError:
+        return None
