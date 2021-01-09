@@ -33,7 +33,7 @@ def get_user(request):
     session_id = request.session.get('id')
     if session_id is None:
         return Message(Status.BAD_REQUEST, 'No session id.')
-    
+  
     try:
         user = User.objects.get(session_id=session_id)
     except User.DoesNotExist:
@@ -45,11 +45,9 @@ def get_or_create_user(request):
     msg_user = get_user(request)
     if is_success(msg_user): user = msg_user.data['user']
 
-    elif msg_user.data['status'] == Status.NOT_FOUND:
+    else msg_user.data['status']:
         msg_user = create_user(request)
         if is_success(msg_user): user = msg_user.data['user']
         else: return msg_user
     
-    else: return msg_user
-
     return Message(Status.SUCCESS, user=user)
