@@ -45,7 +45,7 @@ def get_or_create_user(request):
     msg_user = get_user(request)
     if is_success(msg_user): user = msg_user.data['user']
 
-    else msg_user.data['status']:
+    else:
         msg_user = create_user(request)
         if is_success(msg_user): user = msg_user.data['user']
         else: return msg_user
