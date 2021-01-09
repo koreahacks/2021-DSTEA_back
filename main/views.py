@@ -107,7 +107,16 @@ def write(request, board_url):
 def userlist(request, board_url):
     try:
         users = User.objects.filter(board__board_url=str(board_url)).all()
-        users = [{'nickname': user.nickname, 'auth': user.auth_write} for user in users]
-        return Message(Status.SUCCESS, nickname=users).res()
+        board = Board.objects.get(board_url=str(board_url))
+        nicknames = []
+        for user in users:
+            if board.admin_id == user.session_id:
+                auth = 0
+            elif user.auth_write == True:
+                auth = 1
+            else:
+                auth = 2
+            nicknames.append({'nickname': user.nickname, 'auth': auth})
+        return Message(Status.SUCCESS, user_info=nicknames).res()
     except:
         return Message(Status.INTERNAL_ERROR, is_valid=False).res()

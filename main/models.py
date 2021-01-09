@@ -36,7 +36,7 @@ class Path(models.Model):
 
 class User(models.Model):
     session_id = models.CharField(max_length=40)
-    nickname = models.CharField(max_length=10)
+    nickname = models.CharField(max_length=20)
     board = models.ForeignKey(Board, null=True, on_delete=models.CASCADE)
     channel_name = models.CharField(max_length=100)
     auth_write = models.BooleanField(default=False)
