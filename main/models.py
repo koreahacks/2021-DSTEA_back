@@ -7,7 +7,7 @@ class Board(models.Model):
     admin_id = models.CharField(max_length=40, null=True)
 
     def get_absolute_url(self):
-        return reverse('main:get_board', args=[self.board_url])
+        return self.board_url
         
 class Path(models.Model):
     board = models.ForeignKey(Board, on_delete=models.CASCADE)

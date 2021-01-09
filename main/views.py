@@ -24,7 +24,7 @@ def make_board(request):
     elif is_success(msg_user): # make new board and give to user
         try:
             user = msg_user.data['user']
-            board = Board(board_url=uuid1.uuid1(),
+            board = Board(board_url=str(uuid1.uuid1()),
                         admin_id=user.session_id
                         )
             board.save()
