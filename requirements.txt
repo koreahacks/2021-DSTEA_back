@@ -1,5 +1,9 @@
 django
+django-colorfield
+uuid
+uuid1
 python-dotenv
+psycopg2
 pdf2image
 Pillow
 unoconv
