@@ -27,8 +27,7 @@ def make_board(request):
                         )
             board.save()
             user.board = board
-            user.is_admin = True
-            user.is_public = True
+            user.auth_write = True
             user.save()
             return Message(Status.SUCCESS, board=board.board_url).res()
         except Exception as e:

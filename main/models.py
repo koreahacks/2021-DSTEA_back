@@ -38,4 +38,4 @@ class User(models.Model):
     session_id = models.CharField(max_length=40)
     nickname = models.CharField(max_length=10)
     board = models.ForeignKey(Board, null=True, on_delete=models.CASCADE)
-    auth_write = models.BooleanField(default=True)
+    auth_write = models.BooleanField(default=False)

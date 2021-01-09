@@ -98,6 +98,12 @@ class AuthConsumer(AsyncConsumer):
         elif action == AUTHRES:
             accept = event.get('accept', None)
             session_id = event.get('session_id', None)
+
+            if accept:
+                user = User.objects.get(session_id=session_id)
+                user.auth_write = True
+                user.save()
+
             await self.channel_layer.group_send(
                 f'auth-{self.board_url}',
                 {
