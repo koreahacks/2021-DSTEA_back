@@ -1,5 +1,4 @@
 import uuid1
-from django.shortcuts import redirect
 from django.http import HttpResponse
 
 from main.models import User, Board, Path
@@ -13,11 +12,10 @@ from main.utils.path import get_all_path
 
 def make_board(request):
     msg_user = create_user(request)
-    print(msg_user.data['status'])
     if msg_user.data['status'] == Status.BAD_REQUEST: # Redirect user's board url
         try:
             user = User.objects.get(session_id=request.session.get('id'))
-            return redirect(user.board)
+            return Message(Status.SUCCESS, board=user.board.board_url).res()
         except Exception as e:
             return Message(Status.INTERNAL_ERROR, f'Internal server error, {e}').res()
 
@@ -29,10 +27,9 @@ def make_board(request):
                         )
             board.save()
             user.board = board
-            user.is_admin = True
-            user.is_public = True
+            user.auth_write = True
             user.save()
-            return redirect(board)
+            return Message(Status.SUCCESS, board=board.board_url).res()
         except Exception as e:
             return Message(Status.INTERNAL_ERROR, f'Internal server error, {e}', is_valid=False).res()
 
@@ -85,9 +82,9 @@ def file_upload(request, board_url):
     else:
         return Message(Status.BAD_REQUEST, "Wrong file.").res()
     
-    page_num = pdf2jpgs(pdf_file, board_url)
+    pdf2jpgs(pdf_file, board_url)
 
-    return Message(Status.SUCCESS, page_num=page_num).res()
+    return Message(Status.SUCCESS, pages=get_images(board_url)).res()
 
 def write(request, board_url):
     if request.method != 'POST':
