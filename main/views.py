@@ -12,8 +12,7 @@ def make_board(request):
     if msg_user['status'] == Status.BAD_REQUEST: # Redirect user's board url
         try:
             user = User.objects.get(session_id=request.session_id.get('id'))
-            board = Board.objects.filter(board_url=user.board).get()
-            return redirect(board)
+            return redirect(user.board)
         except Exception as e:
             return Message(Status.INTERNAL_ERROR, f'Internal server error, {e}').res()
 
