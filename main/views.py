@@ -82,9 +82,9 @@ def file_upload(request, board_url):
     else:
         return Message(Status.BAD_REQUEST, "Wrong file.").res()
     
-    page_num = pdf2jpgs(pdf_file, board_url)
+    pdf2jpgs(pdf_file, board_url)
 
-    return Message(Status.SUCCESS, page_num=page_num).res()
+    return Message(Status.SUCCESS, pages=get_images(board_url)).res()
 
 def write(request, board_url):
     if request.method != 'POST':
