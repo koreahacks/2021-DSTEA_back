@@ -153,6 +153,17 @@ class AuthConsumer(AsyncConsumer):
         except:
             return
 
+    @database_sync_to_async
+    def check_auth(self, board_url, user):
+        board = Board.objects.get(board_url=str(board_url))
+        if board.admin_id == user.session_id:
+            auth = 0
+        elif user.auth_write == True:
+            auth = 1
+        else:
+            auth = 2
+        return auth
+
     async def websocket_connect(self, event):
         self.board_url = self.scope['url_route']['kwargs']['board_url']
         self.session_id = self.scope['url_route']['kwargs']['session_id']
@@ -164,17 +175,17 @@ class AuthConsumer(AsyncConsumer):
             self.channel_name
         )
 
-        nickname = await database_sync_to_async(User.objects.get)(session_id=session_id).nickname
+        user = await database_sync_to_async(User.objects.get)(session_id=session_id)
+        auth = await self.check_auth(board_url, user)
 
         await self.channel_layer.group_send(
             f'auth-{self.board_url}',
             {
                 "type": "userlist",
-                "text": nickname,
+                "text": {"nickname": user.nickname, "auth": auth},
             }
         )
 
-        print(self.board_url)
         await self.send({
             "type": "websocket.accept"
         })
@@ -227,7 +238,8 @@ class AuthConsumer(AsyncConsumer):
             })
 
     async def userlist(self, event):
+        data = json.dumps(event['text'])
         await self.send({
             "type": 'websocket.send',
-            "text": event['text']
+            "text": data
         })
