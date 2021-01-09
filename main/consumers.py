@@ -52,12 +52,14 @@ class AuthConsumer(AsyncConsumer):
         action = event.get('action', None)
 
         if action == AUTHREQ:
+            board = Board.objects.get(board_url=self.board_url)
+            admin_id = board.admin_id
             await self.channel_layer.group_send(
                 f'auth-{self.board_url}',
                 {
                     "type": "auth_request",
                     "session_id": self.channel_name,
-                    "admin_id": 
+                    "admin_id": admin_id
                 }
             )
 
