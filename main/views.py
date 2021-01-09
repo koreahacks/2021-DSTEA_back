@@ -4,7 +4,7 @@ from django.http import HttpResponse
 
 from main.models import Path
 from main.utils.common import Message, Status, is_success
-from main.utils.file import ppt2pdf, pdf2jpgs
+from main.utils.file import ppt2pdf, pdf2jpgs, save_file
 from main.utils.file import EXT_PPT, EXT_PDF
 
 
