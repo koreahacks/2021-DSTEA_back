@@ -1,5 +1,6 @@
 import subprocess
 from pdf2image import convert_from_path
+from main.utils.common import Message, Status
 
 DIR_UPLOAD = 'main/static/upload'
 EXT_PPT = ["ppt", "pptx", "pps"]
@@ -27,10 +28,10 @@ def ppt2pdf(ppt_file):
     except TimeoutError:
         p.kill()
         outs, errs = p.communicate()
-        return None
+        return Message(Status.INTERNAL_ERROR, "Takes too long.")
 
     if len(errs) != 0:
-        return None
+        return Message(Status.INTERNAL_ERROR, f"Convert Error: {errs.decode()}")
 
     for ext in EXT_PPT:
         filename = ppt_file.replace(ext, '.pdf')
