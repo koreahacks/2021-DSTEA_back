@@ -115,41 +115,63 @@ class WriteConsumer(AsyncConsumer):
         print('disconnected')
 
 class AuthConsumer(AsyncConsumer):
+    @database_sync_to_async
+    def get_board(self, board_url):
+        return Board.objects.get(board_url=board_url)
+
+    @database_sync_to_async
+    def auth_user(self, session_id):
+        user = User.objects.get(session_id=session_id)
+        user.auth_write = True
+        user.save()
+
+    @database_sync_to_async
+    def update_user(self, session_id, channel_name):
+        try:
+            user = User.objects.get(session_id=session_id)
+            user.channel_name = channel_name
+            user.save()
+        except:
+            return
+
     async def websocket_connect(self, event):
         self.board_url = self.scope['url_route']['kwargs']['board_url']
-        self.channel_name = self.scope['url_route']['kwargs']['session_id']
+        self.session_id = self.scope['url_route']['kwargs']['session_id']
+
+        await self.update_user(self.session_id, self.channel_name)
 
         await self.channel_layer.group_add(
             f'auth-{self.board_url}',
             self.channel_name
         )
+        print(self.board_url)
         await self.send({
             "type": "websocket.accept"
         })
 
     async def websocket_receive(self, event):
-        action = event.get('action', None)
+        text = json.loads(event['text'])
+        action = text.get('action', None)
 
         if action == AUTHREQ:
-            board = Board.objects.get(board_url=self.board_url)
+            board = await self.get_board(self.board_url)
             admin_id = board.admin_id
+
             await self.channel_layer.group_send(
                 f'auth-{self.board_url}',
                 {
                     "type": "auth_request",
-                    "session_id": self.channel_name,
+                    "session_id": self.session_id,
                     "admin_id": admin_id
                 }
             )
 
         elif action == AUTHRES:
-            accept = event.get('accept', None)
-            session_id = event.get('session_id', None)
+            accept = text.get('accept', None)
+            session_id = text.get('session_id', None)
 
             if accept:
-                user = User.objects.get(session_id=session_id)
-                user.auth_write = True
-                user.save()
+                await self.auth_user(session_id)
 
             await self.channel_layer.group_send(
                 f'auth-{self.board_url}',
@@ -161,14 +183,15 @@ class AuthConsumer(AsyncConsumer):
             )
 
     async def auth_request(self, event):
-        if event['admin_id'] == self.channel_name:
+        if self.session_id == event['admin_id']:
             await self.send({
                 "type": 'websocket.send',
-                'session_id': event['session_id']
+                'text': json.dumps({'session_id': event['session_id']})
             })
             
     async def auth_response(self, event):
-        if event['session_id'] == self.channel_name:
+        if self.session_id == event['session_id']:
             await self.send({
-                "accept": event['accept'],
+                "type": 'websocket.send',
+                "text": json.dumps({'accept':event['accept']}),
             })
