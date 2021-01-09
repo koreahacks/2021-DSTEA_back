@@ -9,3 +9,4 @@ Pillow
 unoconv
 channels
 django-cors-headers
+django-rest-framework
