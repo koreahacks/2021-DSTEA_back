@@ -1,5 +1,4 @@
 import uuid1
-from django.shortcuts import redirect
 from django.http import HttpResponse
 
 from main.models import User, Board, Path
@@ -17,7 +16,7 @@ def make_board(request):
     if msg_user.data['status'] == Status.BAD_REQUEST: # Redirect user's board url
         try:
             user = User.objects.get(session_id=request.session.get('id'))
-            return redirect(user.board)
+            return Message(Status.SUCCESS, board=user.board.board_url).res()
         except Exception as e:
             return Message(Status.INTERNAL_ERROR, f'Internal server error, {e}').res()
 
@@ -32,7 +31,7 @@ def make_board(request):
             user.is_admin = True
             user.is_public = True
             user.save()
-            return redirect(board)
+            return Message(Status.SUCCESS, board=user.board.board_url).res()
         except Exception as e:
             return Message(Status.INTERNAL_ERROR, f'Internal server error, {e}', is_valid=False).res()
 
