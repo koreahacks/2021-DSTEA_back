@@ -30,3 +30,24 @@ class WriteConsumer(AsyncConsumer):
             'text': event['text']
         })
 
+<<<<<<< HEAD
+=======
+class DeleteConsumer(AsyncConsumer):
+    async def websocket_connect(self, event):
+        
+
+    async def websocket_receive(self, event):
+
+class AuthReqConsumer(AsyncConsumer):
+    async def websocket_connect(self, event):
+        
+
+    async def websocket_receive(self, event):
+
+
+class AuthResConsumer(AsyncConsumer):
+    async def websocket_connect(self, event):
+        
+
+    async def websocket_receive(self, event):
+>>>>>>> 321cbd6aef640f6f9586d30d198aa10e8ddbb54d
