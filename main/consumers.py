@@ -8,6 +8,7 @@ from main.models import Path, Board, User
 
 AUTHRES = 'res'
 AUTHREQ = 'req'
+AUTHUSER = 'user'
 
 class WriteConsumer(AsyncConsumer):
     @database_sync_to_async
@@ -144,6 +145,17 @@ class AuthConsumer(AsyncConsumer):
             f'auth-{self.board_url}',
             self.channel_name
         )
+
+        nickname = await database_sync_to_async(User.objects.get)(session_id=session_id).nickname
+
+        await self.channel_layer.group_send(
+            f'auth-{self.board_url}',
+            {
+                "type": "userlist",
+                "text": nickname,
+            }
+        )
+
         print(self.board_url)
         await self.send({
             "type": "websocket.accept"
@@ -195,3 +207,9 @@ class AuthConsumer(AsyncConsumer):
                 "type": 'websocket.send',
                 "text": json.dumps({'accept':event['accept']}),
             })
+
+    async def userlist(self, event):
+        await self.send({
+            "type": 'websocket.send',
+            "text": event['text']
+        })
