@@ -4,15 +4,20 @@ import random
 from main.models import User
 from main.utils.common import Status, Message, is_success
 
-with open("main/fruits.txt", "r") as f:
-    fruit_list = f.read().split('\n')
+with open("main/animals.txt", "r") as f:
+    animal_list = f.read().split('\n')
+
+with open("main/adjectives.txt", "r") as f:
+    adjective_list = f.read().split('\n')
+
+
 
 def create_user(request):
     if request.session.get('id') is None: # First Access
         request.session['id'] = str(uuid1.uuid1())
         try:
             user = User(session_id=request.session['id'],
-                        nickname=random.sample(fruit_list, 1)[0] # 추후 수정 필요
+                        nickname=random.choice(adjective_list)+" "+random.choice(animal_list)
                         )
             user.save()
             
