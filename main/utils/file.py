@@ -50,3 +50,12 @@ def save_file(file, board_url):
             dest.write(chunk)
 
     return f'{directory}/{FILE_NAME}'
+
+def delete_uploaded_file(board_url):
+    os.unlink(f'{DIR_UPLOAD}/{str(board_url)}/{FILE_NAME}')
+    return None
+    
+
+def get_images(board_url):
+    directory = f'{DIR_UPLOAD}/{str(board_url)}'
+    return os.listdir(directory)

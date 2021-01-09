@@ -4,11 +4,11 @@ from django.http import HttpResponse
 
 from main.models import User, Board, Path
 from main.utils.common import Message, Status, is_success
-from main.utils.file import ppt2pdf, pdf2jpgs, save_file
+from main.utils.file import ppt2pdf, pdf2jpgs
+from main.utils.file import save_file, delete_uploaded_file, get_images
 from main.utils.file import EXT_PPT, EXT_PDF
-
-from main.utils.common import Status, Message, is_success
-from main.utils.user import create_user
+from main.utils.user import create_user, get_or_create_user
+from main.utils.path import get_all_path
 
 def make_board(request):
     msg_user = create_user(request)
@@ -38,7 +38,25 @@ def make_board(request):
         return msg_user.res()
 
 def get_board(request, board_url):
-    return
+    msg_user = get_or_create_user(request)
+    if is_success(msg_user): user = msg_user.data['user']
+    else: return msg_user.res()
+
+    try:
+        board = Board.objects.filter(board_url=board_url).get()
+    except Board.DoesNotExist:
+        return Message(Status.NOT_FOUND, 'No such board.').res()
+    
+    msg_path_list = get_all_path(board_url, user.session_id)
+    if is_success(msg_path_list): path_list = msg_path_list.data['path_list']
+    else: return msg_path_list.res()
+
+    return Message(Status.SUCCESS,
+        user=user.session_id,
+        nickname=user.nickname,
+        path=path_list,
+        page=get_images(board_url)
+    ).res()
 
 def file_upload(request, board_url):
     if request.method != 'POST':
@@ -63,6 +81,7 @@ def file_upload(request, board_url):
         return Message(Status.BAD_REQUEST, "Wrong file.").res()
     
     page_num = pdf2jpgs(pdf_file, board_url)
+    delete_uploaded_file(board_url)
 
     return Message(Status.SUCCESS, page_num=page_num).res()
 
