@@ -21,7 +21,8 @@ def pdf2jpgs(pdf_file, board_url):
 
     return num_images
 
-def ppt2pdf(ppt_file):
+def ppt2pdf(board_url):
+    ppt_file = f'{DIR_UPLOAD}/{str(board_url)}/{FILE_NAME}'
     p = subprocess.Popen(
         ['unoconv', '-f', 'pdf', ppt_file],
         stdout=subprocess.PIPE,
@@ -38,8 +39,7 @@ def ppt2pdf(ppt_file):
     if len(errs) != 0:
         return Message(Status.INTERNAL_ERROR, f"Convert Error: {errs.decode()}")
 
-    for ext in EXT_PPT:
-        filename = ppt_file.replace(ext, '.pdf')
+    filename = ppt_file + '.pdf'
     
     os.unlink(ppt_file)
     
@@ -62,6 +62,6 @@ def save_file(file, board_url):
 def get_images(board_url):
     directory = f'{DIR_UPLOAD}/{str(board_url)}'
     try:
-        os.listdir(directory)
+        return os.listdir(directory)
     except FileNotFoundError:
         return None

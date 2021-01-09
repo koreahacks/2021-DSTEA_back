@@ -75,7 +75,7 @@ def file_upload(request, board_url):
 
     saved_file = save_file(file, board_url)
     if ext in EXT_PPT:
-        msg_pdf_file = ppt2pdf(saved_file)
+        msg_pdf_file = ppt2pdf(board_url)
         if is_success(msg_pdf_file): pdf_file = msg_pdf_file.data['filename']
         else: return msg_pdf_file.res()
 
