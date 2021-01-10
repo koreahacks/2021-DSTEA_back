@@ -71,7 +71,7 @@ class WriteConsumer(AsyncConsumer):
             ) 
 
         elif text['status'] == 'draw':
-            path = await database_sync_to_async(Path.objects.get)(path_id=text['path_id'])
+            #path = await database_sync_to_async(Path.objects.get)(path_id=text['path_id'])
             await self.channel_layer.group_send(
                 board_url,
                 {
