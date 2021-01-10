@@ -5,7 +5,7 @@ from main.models import User, Board, Path
 from main.utils.common import Message, Status, is_success
 from main.utils.common import send_csrf
 from main.utils.file import ppt2pdf, pdf2jpgs
-from main.utils.file import save_file, get_images. save_img
+from main.utils.file import save_file, get_images, save_img
 from main.utils.file import EXT_PPT, EXT_PDF, EXT_IMG
 from main.utils.user import create_user, get_or_create_user
 from main.utils.path import get_all_path
