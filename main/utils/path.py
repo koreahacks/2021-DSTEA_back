@@ -1,3 +1,4 @@
+import json
 from main.models import Board, Path
 from main.utils.common import Message, Status
 from django.db.models import Q
@@ -9,10 +10,7 @@ def get_all_path(board_url, session_id):
         return Message(Status.NOT_FOUND, 'No such board.')
 
     try:
-        path_list = Path.objects.filter(
-            Q(board=board) and 
-            (Q(session_id=session_id) or Q(is_public=True))
-        ).all()
+        path_list = Path.objects.filter(board=board).all()
     except Exception as e:
         return Message(Status.INTERNAL_ERROR, f"Internal server error, {e}")
     
@@ -27,5 +25,7 @@ def get_all_path(board_url, session_id):
             "data": path.data,
             "pen_type": path.pen_type,
         })
+
+    
 
     return Message(Status.SUCCESS, path_list=result)

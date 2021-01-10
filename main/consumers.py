@@ -19,7 +19,8 @@ class WriteConsumer(AsyncConsumer):
             board = board,
             page_id = text['page'],
             is_public = text['is_public'],
-            color = text['attr']
+            color = text['attr'],
+            data = text['pos']
         )
         path.save()
         return path
@@ -27,7 +28,14 @@ class WriteConsumer(AsyncConsumer):
     @database_sync_to_async
     def update_path(self, path_id, pos):
         path = Path.objects.get(path_id = path_id)
-        path.data = pos
+        path = Path(
+            path_id = text['path_id'],
+            board = board,
+            page_id = text['page'],
+            is_public = text['is_public'],
+            color = text['attr']
+        )
+        path.data = str(pos)
         path.save()
 
     @database_sync_to_async
@@ -42,7 +50,7 @@ class WriteConsumer(AsyncConsumer):
 
     async def websocket_connect(self, event):
         board_url = self.scope['url_route']['kwargs']['board_url']
-        session_id = self.scope['url_route']['kwargs']['session_id']
+        self.session_id = self.scope['url_route']['kwargs']['session_id']
 
         await self.channel_layer.group_add(
             board_url,
@@ -59,13 +67,18 @@ class WriteConsumer(AsyncConsumer):
         text = json.loads(event['text'])
 
         if text['status'] == 'start':
-            new_path = await self.save_path(board_url, text)
-
+            
             await self.channel_layer.group_send(
                 board_url,
                 {
                     "type": "write_message",
-                    "data": new_path.info(),
+                    "data": {
+                        'path':text['path_id'],
+                        'page':text['page'],
+                        'is_public': text['is_public'],
+                        'attr': text['attr']
+                    },
+                    'session_id':session_id,
                     "status": 'start'
                 }
             ) 
@@ -78,21 +91,22 @@ class WriteConsumer(AsyncConsumer):
                     "type": "write_message",
                     "data": {
                         'path': text['path_id'],
-                        'page': text['page']
+                        'page': text['page'],
                     },
+                    'session_id':session_id,
                     "pos": text['pos'],
                     "status": 'draw'
                 }
             )
 
         elif text['status'] == 'end':
-            path = await database_sync_to_async(Path.objects.get)(path_id=text['path_id'])
-            await self.update_path(text['path_id'], text['pos'])
+            new_path = await self.save_path(board_url, text)
             await self.channel_layer.group_send(
                 board_url,
                 {
                     "type": "write_message",
-                    "data": path.info(),
+                    "data": new_path.info(),
+                    'session_id':session_id,
                     "status": 'end'
                 }
             )            
@@ -110,17 +124,20 @@ class WriteConsumer(AsyncConsumer):
 
     async def write_message(self, event):
         data = json.dumps({
-            'status': event['status'],
-            'path_id': event['data']['path'],
-            'is_public': event['data']['is_public'],
-            'page': event['data']['page'],
-            'attr': event['data']['attr'],
-            'pos': event.get('pos')
-        })
+                'status': event['status'],
+                'path_id': event['data'].get('path'),
+                'is_public': event['data'].get('is_public'),
+                'page': event['data'].get('page'),
+                'attr': event['data'].get('attr'),
+                'pos': event.get('pos')
+            })
+        print(self.session_id, event.get('session_id'))
+        if self.session_id == event.get('session_id'):
+            return
         await self.send({
-            'type': 'websocket.send',
-            'text': data,
-        })
+                'type': 'websocket.send',
+                'text': data,
+            })
 
     async def delete_message(self, event):
         data = json.dumps({

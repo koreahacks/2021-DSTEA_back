@@ -71,13 +71,12 @@ def file_upload(request, board_url):
     file = request.FILES['file']
     ext = file.name.split('.')[-1].lower()
 
-
     if ext in EXT_IMG:
         save_img(file, board_url)
         return Message(Status.SUCCESS, pages=file.name).res()
     
     saved_file = save_file(file, board_url)
-    
+
     if ext in EXT_PPT:
         msg_pdf_file = ppt2pdf(board_url)
         if is_success(msg_pdf_file): pdf_file = msg_pdf_file.data['filename']

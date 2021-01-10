@@ -8,7 +8,7 @@ DIR_UPLOAD = '.static_root/upload'
 EXT_PPT = ["ppt", "pptx", "pps"]
 EXT_PDF = ["pdf"]
 EXT_IMG = ["jpg", "png", "jpeg"]
-TIMEOUT = 20
+TIMEOUT = 30
 
 def pdf2jpgs(pdf_file, board_url):
     images = convert_from_path(pdf_file)
@@ -16,6 +16,7 @@ def pdf2jpgs(pdf_file, board_url):
 
     for i in range(num_images):
         filename = f'{DIR_UPLOAD}/{board_url}/{str(i)}.jpg'
+        
         images[i].save(filename)
 
     os.unlink(pdf_file)
@@ -68,7 +69,7 @@ def save_img(file, board_url):
     except FileExistsError:
         pass
 
-    with open(f'{directory}/{file,name}', 'wb+') as dest:
+    with open(f'{directory}/{file.name}', 'wb+') as dest:
         for chunk in file.chunks():
             dest.write(chunk)
 
@@ -79,4 +80,4 @@ def get_images(board_url):
     try:
         return os.listdir(directory)
     except FileNotFoundError:
-        return None
+        return []

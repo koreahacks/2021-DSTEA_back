@@ -1,3 +1,3 @@
 python3 manage.py makemigrations
 python3 manage.py migrate
-gunicorn everyboard_back.wsgi --bind 0.0.0.0:8000 
+uvicorn everyboard_back.asgi:application --port 8000 --workers 4
