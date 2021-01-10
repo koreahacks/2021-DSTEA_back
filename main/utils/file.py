@@ -7,6 +7,7 @@ FILE_NAME = 'original'
 DIR_UPLOAD = '.static_root/upload'
 EXT_PPT = ["ppt", "pptx", "pps"]
 EXT_PDF = ["pdf"]
+EXT_IMG = ["jpg", "png", "jpeg"]
 TIMEOUT = 20
 
 def pdf2jpgs(pdf_file, board_url):
@@ -58,6 +59,20 @@ def save_file(file, board_url):
             dest.write(chunk)
 
     return f'{directory}/{FILE_NAME}'
+
+def save_img(file, board_url):
+    directory = f'{DIR_UPLOAD}/{str(board_url)}'
+    
+    try:
+        os.mkdir(directory)
+    except FileExistsError:
+        pass
+
+    with open(f'{directory}/{file,name}', 'wb+') as dest:
+        for chunk in file.chunks():
+            dest.write(chunk)
+
+    return f'{directory}/{file.name}'
 
 def get_images(board_url):
     directory = f'{DIR_UPLOAD}/{str(board_url)}'

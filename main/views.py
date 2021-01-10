@@ -5,8 +5,8 @@ from main.models import User, Board, Path
 from main.utils.common import Message, Status, is_success
 from main.utils.common import send_csrf
 from main.utils.file import ppt2pdf, pdf2jpgs
-from main.utils.file import save_file, get_images
-from main.utils.file import EXT_PPT, EXT_PDF
+from main.utils.file import save_file, get_images. save_img
+from main.utils.file import EXT_PPT, EXT_PDF, EXT_IMG
 from main.utils.user import create_user, get_or_create_user
 from main.utils.path import get_all_path
 
@@ -71,7 +71,13 @@ def file_upload(request, board_url):
     file = request.FILES['file']
     ext = file.name.split('.')[-1]
 
+
+    if ext in EXT_IMG:
+        save_img(file, board_url)
+        return Message(Status.SUCCESS, pages=file.name).res()
+    
     saved_file = save_file(file, board_url)
+    
     if ext in EXT_PPT:
         msg_pdf_file = ppt2pdf(board_url)
         if is_success(msg_pdf_file): pdf_file = msg_pdf_file.data['filename']
@@ -79,7 +85,7 @@ def file_upload(request, board_url):
 
     elif ext in EXT_PDF:
         pdf_file = saved_file
-    
+
     else:
         return Message(Status.BAD_REQUEST, "Wrong file.").res()
     
