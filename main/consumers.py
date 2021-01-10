@@ -76,7 +76,10 @@ class WriteConsumer(AsyncConsumer):
                 board_url,
                 {
                     "type": "write_message",
-                    "data": path.info(),
+                    "data": {
+                        'path': text['path_id'],
+                        'page': text['page']
+                    },
                     "pos": text['pos'],
                     "status": 'draw'
                 }
@@ -101,7 +104,7 @@ class WriteConsumer(AsyncConsumer):
                 board_url,
                 {
                     "type": "delete_message",
-                    "data": {'page': page, 'path_id': path_id}
+                    "data": {'page': page, 'path_id': text['path_id']}
                 }
             )
 
