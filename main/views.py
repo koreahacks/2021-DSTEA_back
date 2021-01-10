@@ -69,7 +69,7 @@ def file_upload(request, board_url):
         return Message(Status.BAD_REQUEST, 'Wrong form.').res()
 
     file = request.FILES['file']
-    ext = file.name.split('.')[-1]
+    ext = file.name.split('.')[-1].lower()
 
 
     if ext in EXT_IMG:
